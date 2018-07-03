@@ -17,6 +17,8 @@ add_message_files(
   ADC.msg
 )
 
+generate_messages()
+
 
 catkin_package(
 #  INCLUDE_DIRS include
