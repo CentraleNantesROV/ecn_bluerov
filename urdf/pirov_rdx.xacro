@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<robot name="pirov" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find ecn_bluerov)/urdf/pirov.xacro" />
+  <xacro:pirov_robot use_mesh="false"/>
+  
+</robot>
+
+
+

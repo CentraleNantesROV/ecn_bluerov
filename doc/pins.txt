@@ -1,0 +1,12 @@
+Thruster        	nb 	direction	PIN
+starboard       	1	ccw      	0
+port                2	cw        	2
+front starboard 	3	ccw      	4
+front port          4   cw      	6
+rear                5	cw          8
+middle              6   ccw         10
+Tilt                                12
+		
+PWM Neutral	    1500    0
+PWM Max         1900    45
+PWM Min         1100    -45

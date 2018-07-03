@@ -1,0 +1,8 @@
+<launch>
+<group ns="pirov">
+
+    <node pkg="ecn_bluerov" type="pirov_barometer" name="barometer_node" respwn="true" output="screen">
+    </node>
+</group>
+</launch>
+

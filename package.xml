@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>ecn_bluerov</name>
+  <version>0.0.1</version>
+  <description>The ecn_bluerov package</description>
+
+  <maintainer email="olivier.kermorgant@ec-nantes.fr">Olivier</maintainer>
+
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

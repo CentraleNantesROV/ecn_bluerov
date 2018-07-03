@@ -1,0 +1,230 @@
+<?xml version="1.0"?>
+
+   <!-- STL-version of the URDF, used with gazebo for dynamic simulation  -->
+
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  
+  <xacro:property name="PI" value="3.1415926535897931"/>
+  
+  <!-- Body properties -->
+  <xacro:property name="thr12_y" value="0.109"/>
+  <xacro:property name="thr1234_z" value="-0.02"/>
+  <xacro:property name="thr34_x" value="0.165"/>
+  <xacro:property name="thr34_y" value="0.11"/>
+  <xacro:property name="thr5_x" value="-0.185"/>
+  <xacro:property name="thr5_z" value="-0.105"/>
+  <xacro:property name="thr6_x" value="0.028"/>
+  <xacro:property name="thr6_z" value="-0.127"/>
+  
+  <xacro:property name="x_offset" value="0.02"/>
+  
+  <xacro:property name="eps" value="0.00000001"/>
+  
+  <!-- Thruster link -->
+    <xacro:macro name="thruster_dummy_link" params="name xyz rpy">        
+        <joint name="${name}" type="fixed">
+            <parent link="base_link"/>
+            <child link="${name}"/>
+            <origin rpy="${rpy}" xyz="${xyz}"/>
+        </joint>
+        
+        <link name="${name}">
+            <buoyancy><compensation>1.0</compensation></buoyancy>
+            <!--visual name="${name}">
+                <geometry>
+                    <cylinder length=".5" radius=".01"/>
+                </geometry>
+                <material name="black">
+                    <color rgba="0 0 0 1"/>
+                </material>
+            </visual>  
+            <inertial>
+                <mass value=".1"/>
+                <inertia
+                    ixx=".1"
+                    ixy="0.0"
+                    ixz="0.0"
+                    iyy=".1"
+                    iyz="0.0"
+                    izz=".1"/>
+                </inertial-->  
+            </link>                             
+            <gazebo reference="${name}">
+                <material>Gazebo/Black</material>
+            </gazebo>
+        </xacro:macro>             
+        
+    <xacro:macro name="pirov_robot" params="use_mesh">
+    
+        
+  <!-- Plugin list -->
+    <gazebo>
+    <!-- Gazebo plugin listens to the body-->
+    <plugin name="freefloating_gazebo_control" filename="libfreefloating_gazebo_control.so">
+        <switchService>switch</switchService>
+        <updateRate>100</updateRate>
+        <link>base_link</link>
+        
+        <!-- for each thruster, give the map to XYZ+RPY and the maximum effort -->
+        <thruster>
+            <effort>40</effort>
+            <name>thr1</name>
+            <map>1 0 0 0 0 ${thr12_y}</map>
+        </thruster>
+        <thruster>
+            <effort>40</effort>
+            <name>thr2</name>
+            <map>1 0 0 0 0 ${-thr12_y}</map>
+        </thruster>
+        <thruster>
+            <effort>30</effort>
+            <name>thr3</name>
+            <map>0 0 -1 ${thr34_y} ${thr34_x} 0</map>
+        </thruster>
+        <thruster>
+            <effort>30</effort>
+            <name>thr4</name>
+            <map>0 0 -1 ${-thr34_y} ${thr34_x} 0</map>
+        </thruster>
+        <thruster>
+            <effort>30</effort>
+            <name>thr5</name>
+            <map>0 0 -1 0 ${thr5_x} 0</map>
+        </thruster>       
+        <thruster>
+            <effort>30</effort>
+            <name>thr6</name>
+            <map>0 1 0 ${-thr6_z} 0 0</map>
+        </thruster>
+    </plugin>            
+    </gazebo>
+
+  <link name="base_link">
+ <xacro:if value="${use_mesh}">
+    <visual>
+      <origin xyz="-0.253 -0.167 -0.19" rpy="${PI/2} 0 ${PI/2}"/>
+      <!--origin xyz="-0.241 0.165 0.17" rpy="${PI/2} 0 -${PI/2}"/-->
+    
+      <geometry>
+	<mesh filename="file://$(find ecn_bluerov)/urdf/mesh/brov-redux.stl" scale="0.001 0.001 0.001"/>
+      </geometry>  
+    </visual>
+    </xacro:if>
+     <inertial>
+      <origin xyz="0 0 -0.1" rpy="0 0 0"/>
+      <mass value="5"/>
+      <inertia
+	  ixx="5"
+	  ixy="0.0"
+	  ixz="0.0"
+	  iyy="5"
+	  iyz="5"
+	  izz="5"/>
+    </inertial>
+  <buoyancy>
+      <compensation>1.01</compensation>
+      <origin xyz= "0 0 0"/>
+      <limit radius="0.01"/>
+      <damping xyz="50 100 60" rpy="50 50 50"/>
+  </buoyancy>
+  </link>
+ 
+  <link name="camera">
+    <visual>
+      <geometry>
+        <cylinder radius="0.01" length="0.03"/>
+      </geometry> 
+      <material name="black">
+        <color rgba="0 0 0 1"/>
+    </material>
+    </visual>
+     <inertial>
+      <mass value="0.001"/>
+      <inertia
+	  ixx="0.001"
+	  ixy="0.0"
+	  ixz="0.0"
+	  iyy="0.001"
+	  iyz="0"
+	  izz="0.001"/>
+    </inertial>
+  </link>
+  
+    <gazebo reference="camera">
+        <material>Gazebo/Black</material>
+    </gazebo>
+  
+  <joint name="tilt" type="revolute">
+    <parent link="base_link"/>
+    <child link="camera"/>
+    <origin xyz="${x_offset + .15} 0 0" rpy="0 ${PI/2} 0"/>   
+    <axis xyz="0 1 0" />
+    <limit effort="100" velocity="5.0" lower="${-PI/4}" upper="${PI/4}"/>
+    <dynamics damping="0.8"/>
+  </joint>
+  
+ 
+  <link name="lsm"/>
+  <link name="mpu"/>
+    
+  
+  <joint name="lsm" type="fixed">
+    <parent link="base_link"/>
+    <child link="lsm"/>
+    <origin rpy="0 0 0" xyz="${x_offset + .1} 0.018 0.02"/>      
+  </joint>
+
+    <joint name="mpu" type="fixed">
+    <parent link="base_link"/>
+    <child link="mpu"/>
+    <origin rpy="0 0 0" xyz="${x_offset + .11} 0.018 0.02"/>      
+  </joint>
+      
+   
+    <gazebo reference="lsm">
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>lsm</topicName>
+        <bodyName>pirov</bodyName>
+        <updateRateHZ>100.0</updateRateHZ>
+        <gaussianNoise>0.01</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>lsm</frameName>
+      </plugin>
+    </sensor>
+   </gazebo>
+   
+    <gazebo reference="mpu">
+    <sensor name="imu_sensor" type="imu">
+      <always_on>true</always_on>
+      <update_rate>100</update_rate>
+      <visualize>true</visualize>
+      <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
+        <topicName>mpu</topicName>
+        <bodyName>pirov</bodyName>
+        <updateRateHZ>100.0</updateRateHZ>
+        <gaussianNoise>0.01</gaussianNoise>
+        <xyzOffset>0 0 0</xyzOffset>
+        <rpyOffset>0 0 0</rpyOffset>
+        <frameName>mpu</frameName>
+      </plugin>
+    </sensor>
+   </gazebo>
+  
+
+<xacro:thruster_dummy_link name="thr1" xyz="0.0 ${-thr12_y} ${thr1234_z}" rpy="-0.0 -1.57079632679 0.0"/>
+<xacro:thruster_dummy_link name="thr2" xyz="0.0 ${thr12_y} ${thr1234_z}" rpy="-0.0 -1.57079632679 0.0"/>
+<xacro:thruster_dummy_link name="thr3" xyz="${thr34_x} ${-thr34_y} ${thr1234_z}" rpy="0.0 -0.0 0.0"/>
+<xacro:thruster_dummy_link name="thr4" xyz="${thr34_x} ${thr34_y} ${thr1234_z}" rpy="0.0 -0.0 0.0"/>
+<xacro:thruster_dummy_link name="thr5" xyz="${thr5_x} 0.0 ${thr5_z}" rpy="0.0 -0.0 0.0"/>
+<xacro:thruster_dummy_link name="thr6" xyz="${thr6_x} 0.0 ${thr6_z}" rpy="1.57079632679 -0.0 0.0"/>
+
+  </xacro:macro>
+</robot>
+
+
+

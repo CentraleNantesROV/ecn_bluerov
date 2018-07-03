@@ -1,0 +1,9 @@
+
+        <node type="pirov_imu" pkg="ecn_bluerov" name="mpu_interface" respawn="true" >
+            <param name="sensor_name" type="string" value="mpu"/>
+        </node>
+        <node type="pirov_imu" pkg="ecn_bluerov" name="lsm_interface" respawn="true" >
+            <param name="sensor_name" type="string" value="lsm"/>
+        </node>
+        
+

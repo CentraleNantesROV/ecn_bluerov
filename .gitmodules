@@ -1,0 +1,6 @@
+[submodule "ms5837-python"]
+	path = ms5837-python
+	url = git@github.com:bluerobotics/ms5837-python.git
+[submodule "Navio2"]
+	path = Navio2
+	url = git@github.com:emlid/Navio2.git
