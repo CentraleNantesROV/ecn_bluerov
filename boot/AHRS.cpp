@@ -1,27 +1,3 @@
-/*
-This code is provided under the BSD license.
-Copyright (c) 2014, Emlid Limited. All rights reserved.
-Written by Igor Vereninov and Mikhail Avkhimenia
-twitter.com/emlidtech || www.emlid.com || info@emlid.com
-
-Application: Mahory AHRS algorithm supplied with data from MPU9250 and LSM9DS1.
-Outputs roll, pitch and yaw in the console and sends quaternion
-over the network - it can be used with 3D IMU visualizer located in
-Navio/Applications/3D IMU visualizer.
-
-To run this app navigate to the directory containing it and run following commands:
-make
-sudo ./AHRS -i [sensor name] ipaddress portnumber
-Sensors names: mpu is MPU9250, lsm is LSM9DS1.
-If you want to visualize IMU data on another machine pass it's address and port
-For print help:
-./AHRS -h
-
-To achieve stable loop you need to run this application with a high priority
-on a linux kernel with real-time patch. Raspbian distribution with real-time
-kernel is available at emlid.com and priority can be set with chrt command:
-chrt -f -p 99 PID
-*/
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 
@@ -426,11 +402,11 @@ int main(int argc, char *argv[])
     // declare node and loop rate at 10 Hz
     ros::init(argc, argv, "imu_node");
     ROS_INFO("ros connected to pirov_imu");
-    ros::NodeHandle nh("~");
-    ros::Rate loop(10);
+    ros::NodeHandle nh;
+    ros::Rate loop(100);
 
     // get the sensor name
-    if (nh.getParam("sensor_name", msg_imu.header.frame_id))
+    if (ros::NodeHandle("~").getParam("sensor_name", msg_imu.header.frame_id))
       ROS_INFO("Got param: %sensor_name", msg_imu.header.frame_id.c_str());
     else
       ROS_ERROR("Failed to get param 'sensor_name'");
@@ -461,7 +437,7 @@ int main(int argc, char *argv[])
     {
         imuLoop(ahrs.get());
         pub_imu.publish(msg_imu);
-        ros::spinOnce();        
-
+        ros::spinOnce();
+	loop.sleep();
     }
 }

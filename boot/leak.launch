@@ -1,7 +1,0 @@
-<launch>
-<group ns="pirov">
-
-    <node pkg="ecn_bluerov" type="pirov_leak" name="leak_node" respwn="true" output="screen">
-    </node>
-</group>
-</launch>

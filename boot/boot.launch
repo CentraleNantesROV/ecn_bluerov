@@ -15,9 +15,16 @@
             <param name="framerate" value="20"/>
             <param name="camera_frame_id" value="raspicam"/>
         </node>
-        
-        <!--node type="pirov_leak" pkg="ecn_bluerov" name="leak_interface" respawn="true" /-->
 
+	<node pkg="ecn_bluerov" type="pirov_imu" name="mpu_imu" respawn="true" output="screen">
+		<param name="sensor_name" value="mpu" />
+	</node>
+
+	<node pkg="ecn_bluerov" type="pirov_imu" name="lsm_imu" respawn="true" output="screen">
+                <param name="sensor_name" value="lsm" />
+        </node>
+
+        
        <node type="pirov_adc" pkg="ecn_bluerov" name="adc_interface" respawn="true" output="screen"/>
         
        <!--node type="bar30.py" pkg="ecn_bluerov" name="barometer_interface" respawn="true"/-->
