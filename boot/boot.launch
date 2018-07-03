@@ -31,9 +31,9 @@
         
         <!-- robot model -->        
         <rosparam file="$(find ecn_bluerov)/config/pirov_real.yaml" command="load"/>
+        <param name="robot_description_no_mesh" command="$(find xacro)/xacro --inorder $(find ecn_bluerov)/urdf/pirov_rdx.xacro"/>
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
-            <param name="robot_description_no_mesh" command="$(find xacro)/xacro --inorder $(find ecn_bluerov)/urdf/pirov_rdx.xacro"/>
-            <remap from="robot_description" to="~robot_description_no_mesh"/>
+            <remap from="robot_description" to="robot_description_no_mesh"/>
             <remap from="joint_states" to="tilt_command"/>
         </node>
         
