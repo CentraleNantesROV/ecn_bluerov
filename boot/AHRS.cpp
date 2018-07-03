@@ -228,9 +228,9 @@ void AHRS::updateIMU(float dt)
     msg_imu.angular_velocity.x=gx;
     msg_imu.angular_velocity.y=gy;
     msg_imu.angular_velocity.z=gz;
-    msg_imu.linear_acceleration.x=ax;
-    msg_imu.linear_acceleration.y=ay;
-    msg_imu.linear_acceleration.z=az;
+    msg_imu.linear_acceleration.x=ax*G_SI;
+    msg_imu.linear_acceleration.y=ay*G_SI;
+    msg_imu.linear_acceleration.z=az*G_SI;
     // ---------------------------------------------
 
 }
