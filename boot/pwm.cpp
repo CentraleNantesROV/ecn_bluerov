@@ -13,7 +13,7 @@ double tilt_angle;
 double thruster_time;
 double tilt_time;
 
-double interp(double v, const std::vector<double> &x, const std::vector<double> &y)
+float interp(float v, const std::vector<float> &x, const std::vector<float> &y)
 {
     // no extrapolation
     if(v <= x[0])
@@ -24,11 +24,9 @@ double interp(double v, const std::vector<double> &x, const std::vector<double> 
     int i = 0;
     while ( v > x[i+1] ) i++;
 
-    const double xL = x[i], yL = y[i], xR = x[i+1], yR = y[i+1];
+    const float xL = x[i], yL = y[i], xR = x[i+1], yR = y[i+1];
 
-    double dydx = ( yR - yL ) / ( xR - xL );
-
-    return yL + dydx * ( v - xL );
+    return yL + ( yR - yL ) / ( xR - xL ) * ( v - xL );
 }
 
 
@@ -108,12 +106,12 @@ int main(int argc, char *argv[])
                                             readTilt);
 
     // maps
-    const std::vector<double> forces = {-30, 0, 30};
-    const std::vector<double> forces_pwm = {1100, 1500, 1900};
+    const std::vector<float> forces = {-40, -35.5, -28.5, -22.2, -16.1, -10, -5.1, -1.1, 0, 0, 1.8, 6.2, 12.2, 19.2, 26.4, 33.8, 41.1, 49.9};
+    const std::vector<float> forces_pwm = {1100, 1150, 1200, 1250, 1300, 1350, 1400, 1450, 1480, 1520, 1550, 1600, 1650, 1700, 1750, 1800, 1850, 1900};
 
     while (ros::ok())
     {
-        const double t= ros::Time::now().toSec();
+        const double t = ros::Time::now().toSec();
         if(t - thruster_time > 1)
             thruster_force = {0,0,0,0,0,0};
         if(t - tilt_time > 1)
@@ -122,7 +120,7 @@ int main(int argc, char *argv[])
         // apply thruster pwm
         for(int i = 0; i < 6; ++i)
         {
-            const double v = interp(thruster_force[i], forces, forces_pwm);
+            const float v = interp(thruster_force[i], forces, forces_pwm);
             //std::cout << "Thr# " << i << ", force = " << thruster_force[i] << ", pwm = " << v << std::endl; 
             pwm->set_duty_cycle(pwm_idx[i], v);
         }

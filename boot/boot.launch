@@ -5,29 +5,25 @@
     <group ns="pirov">  
         
         <!-- thruster interface -->
-<!--         <node name="pwm_interface" pkg="ecn_bluerov" type="pirov_pwm" respawn="true"/> -->
+         <node name="pwm_interface" pkg="ecn_bluerov" type="pirov_pwm" respawn="true"/>
         
         <!-- sensor interface -->
-        <!--node type="raspicam_node" pkg="raspicam_node" name="raspicam" respawn="true">
+        <node type="raspicam_node" pkg="raspicam_node" name="raspicam" respawn="true">
             <param name="camera_info_url" value="file://$(find ecn_bluerov)/launch/cam_air.yaml"/>
             <param name="width" value="640"/>
             <param name="height" value="480"/>
             <param name="framerate" value="20"/>
             <param name="camera_frame_id" value="raspicam"/>
-        </node-->
+        </node>
         
-        <!--node type="pirov_leak" pkg="ecn_bluerov" name="leak_interface" respawn="true" >
-        </node-->
+        <!--node type="pirov_leak" pkg="ecn_bluerov" name="leak_interface" respawn="true" /-->
 
-     <!--   <node type="pirov_adc" pkg="ecn_bluerov" name="adc_interface" respawn="true" output="screen">
-        </node>-->
+       <node type="pirov_adc" pkg="ecn_bluerov" name="adc_interface" respawn="true" output="screen"/>
         
-        <!--node type="bar30.py" pkg="ecn_bluerov" name="barometer_interface" respawn="true">
-        </node-->
+       <!--node type="bar30.py" pkg="ecn_bluerov" name="barometer_interface" respawn="true"/-->
         
         <!-- robot model -->        
-<!--         <rosparam file="$(find ecn_bluerov)/config/pirov_real.yaml" command="load"/> -->
-        
+        <rosparam file="$(find ecn_bluerov)/config/pirov_real.yaml" command="load"/>
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
             <param name="robot_description" command="$(find xacro)/xacro --inorder $(find ecn_bluerov)/urdf/pirov_rdx.xacro"/>
             <remap from="joint_states" to="tilt_command"/>
