@@ -9,6 +9,12 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   std_msgs
   geometry_msgs
+  message_generation
+)
+
+add_message_files(
+  FILES
+  ADC.msg
 )
 
 
@@ -23,6 +29,7 @@ catkin_package(
     ## Specify additional locations of header files
     ## Your package locations should be listed before other locations
     include_directories(
+    include
     Navio2/C++/Navio/Navio2
     Navio2/C++/Navio/Common
     Navio2/C++/Navio
@@ -44,11 +51,12 @@ catkin_package(
     add_executable(pirov_imu  boot/AHRS.cpp boot/AHRS.hpp)
     target_link_libraries(pirov_imu navio2 ${catkin_LIBRARIES})
 
-    add_executable(pirov_leak boot/leak.cpp)
-    target_link_libraries(pirov_leak navio2 ${catkin_LIBRARIES})
+#    add_executable(pirov_leak boot/leak.cpp)
+#    target_link_libraries(pirov_leak navio2 ${catkin_LIBRARIES})
 
     add_executable(pirov_adc boot/ADC.cpp)
     target_link_libraries(pirov_adc navio2 ${catkin_LIBRARIES})
+    add_dependencies(pirov_adc ${${PROJECT_NAME}_EXPORTED_TARGETS})
 
     #add_executable(pirov_barometer boot/barometer.cpp)
     #target_link_libraries(pirov_barometer navio2 ${catkin_LIBRARIES})
