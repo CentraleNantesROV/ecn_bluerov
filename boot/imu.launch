@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <group ns="pirov">  
+        
+	<node pkg="ecn_bluerov" type="pirov_imu" name="mpu_imu" respawn="true" output="screen">
+		<param name="sensor_name" value="mpu" />
+	</node>
+
+	<node pkg="ecn_bluerov" type="pirov_imu" name="lsm_imu" respawn="true" output="screen">
+                <param name="sensor_name" value="lsm" />
+        </node>
+        
+        
+    </group>
+</launch>
