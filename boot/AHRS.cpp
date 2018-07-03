@@ -44,7 +44,6 @@ chrt -f -p 99 PID
 
 sensor_msgs::Imu msg_imu;
 
-
 AHRS::AHRS(std::unique_ptr <InertialSensor> imu)
 {
     sensor = move(imu);
@@ -427,26 +426,16 @@ int main(int argc, char *argv[])
     // declare node and loop rate at 10 Hz
     ros::init(argc, argv, "imu_node");
     ROS_INFO("ros connected to pirov_imu");
-    ros::NodeHandle nh_("~");
+    ros::NodeHandle nh("~");
     ros::Rate loop(10);
 
-
-    //recupere le nom du imu
-
-    //PROBLEME!!!!! ne reconnait pas sensor_name comme parametre
-    std::string sensor_name;
-
-    if (nh_.getParam("sensor_name", sensor_name))
-    {
-      ROS_INFO("Got param: %sensor_name", sensor_name.c_str());
-    }
+    // get the sensor name
+    if (nh.getParam("sensor_name", msg_imu.header.frame_id))
+      ROS_INFO("Got param: %sensor_name", msg_imu.header.frame_id.c_str());
     else
-    {
       ROS_ERROR("Failed to get param 'sensor_name'");
-    }
 
-
-  auto imu = get_inertial_sensor(sensor_name);
+  auto imu = get_inertial_sensor(msg_imu.header.frame_id);
     if (!imu) {
         printf("Wrong sensor name. Select: mpu or lsm\n");
         return EXIT_FAILURE;
@@ -458,9 +447,7 @@ int main(int argc, char *argv[])
     }
 
     //Publishing
-    ros::Publisher pub_imu = nh_.advertise<sensor_msgs::Imu>(sensor_name, 1);
-
-
+    ros::Publisher pub_imu = nh.advertise<sensor_msgs::Imu>(msg_imu.header.frame_id, 1);
 
     //--------------------------- Network setup -------------------------------
 
@@ -469,7 +456,6 @@ int main(int argc, char *argv[])
     //-------------------- Setup gyroscope offset -----------------------------
    
     ahrs->setGyroOffset();
-    msg_imu.header.frame_id="BLUEROV";
 
     while(ros::ok())
     {
