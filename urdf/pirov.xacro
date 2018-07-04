@@ -171,13 +171,13 @@
   <joint name="lsm" type="fixed">
     <parent link="base_link"/>
     <child link="lsm"/>
-    <origin rpy="${PI} 0 ${-PI/2}" xyz="${x_offset + .1} 0.018 0.02"/>      
+    <origin rpy="0 0 ${-PI/2}" xyz="${x_offset + .1} 0.018 0.02"/>      
   </joint>
 
     <joint name="mpu" type="fixed">
     <parent link="base_link"/>
     <child link="mpu"/>
-    <origin rpy="${PI} 0 ${-PI/2}" xyz="${x_offset + .11} 0.018 0.02"/>      
+    <origin rpy="0 0 ${-PI/2}" xyz="${x_offset + .11} 0.018 0.02"/>      
   </joint>
       
    
