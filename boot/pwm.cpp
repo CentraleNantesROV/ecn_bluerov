@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 
     ros::Subscriber thruster_sub = nh.subscribe("thruster_command", 10,
                                                 readThrusters);
-    ros::Subscriber tilt_sub = nh.subscribe("joint_command", 10,
+    ros::Subscriber tilt_sub = nh.subscribe("joint_setpoint", 10,
                                             readTilt);
 
     // maps
