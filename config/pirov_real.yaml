@@ -1,15 +1,6 @@
 controllers:
     config:
-        body:
-            state: state
-            command: thruster_command
-            type: thruster
-            control_type: thruster
-            pid: True
         joints:
-            state: joint_states
-            setpoint: tilt_command
-            command: joint_command
             dynamic_reconfigure: True
     tilt:
         velocity: {p: 0.0, i: 0., d: 0.0}
