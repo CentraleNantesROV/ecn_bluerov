@@ -27,11 +27,11 @@
         
        <node type="pirov_adc" pkg="ecn_bluerov" name="adc_interface" respawn="true" output="screen"/>
         
-       <!--node type="bar30.py" pkg="ecn_bluerov" name="barometer_interface" respawn="true"/-->
+       <node type="bar30.py" pkg="ecn_bluerov" name="barometer_interface" respawn="true"/>
         
         <!-- robot model -->        
         <rosparam file="$(find ecn_bluerov)/config/pirov_real.yaml" command="load"/>
-        <param name="robot_description_no_mesh" command="$(find xacro)/xacro $(find ecn_bluerov)/urdf/pirov_rdx.xacro"/>
+        <param name="robot_description_no_mesh" command="$(find xacro)/xacro $(find ecn_bluerov)/urdf/pirov.xacro use_mesh:=false"/>
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true">
             <remap from="robot_description" to="robot_description_no_mesh"/>
             <remap from="joint_states" to="joint_command"/>

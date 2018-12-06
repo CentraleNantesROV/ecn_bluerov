@@ -2,7 +2,10 @@
 
    <!-- STL-version of the URDF, used with gazebo for dynamic simulation  -->
 
-<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="pirov" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    
+  <xacro:arg name="use_mesh" default="true"/>
+  <xacro:arg name="density" default="1"/>
   
   <xacro:property name="PI" value="3.1415926535897931"/>
   
@@ -53,9 +56,7 @@
                 <material>Gazebo/Black</material>
             </gazebo>
         </xacro:macro>             
-        
-    <xacro:macro name="pirov_robot" params="use_mesh">
-    
+          
         
   <!-- Plugin list -->
     <gazebo>
@@ -100,7 +101,7 @@
     </gazebo>
 
   <link name="base_link">
- <xacro:if value="${use_mesh}">
+ <xacro:if value="$(arg use_mesh)">
     <visual>
       <origin xyz="-0.253 -0.167 -0.19" rpy="${PI/2} 0 ${PI/2}"/>
       <!--origin xyz="-0.241 0.165 0.17" rpy="${PI/2} 0 -${PI/2}"/-->
@@ -121,12 +122,20 @@
 	  iyz="5"
 	  izz="5"/>
     </inertial>
-  <buoyancy>
+    
+    <fluid>
+        <density>$(arg density)</density>
+    <buoyancy>
       <compensation>1.01</compensation>
       <origin xyz= "0 0 0"/>
       <limit radius="0.01"/>
-      <damping xyz="50 100 60" rpy="50 50 50"/>
-  </buoyancy>
+    </buoyancy>
+    <hydrodynamics>
+      <damping xyz="50 100 60" rpy="50 50 50" type="linear"/>
+      <damping xyz="50 100 60" rpy="50 50 50" type="quadratic"/>        
+    </hydrodynamics>        
+    </fluid>
+    
   </link>
  
   <link name="camera">
@@ -221,7 +230,6 @@
 <xacro:thruster_dummy_link name="thr5" xyz="${thr5_x} 0.0 ${thr5_z}" rpy="0.0 -0.0 0.0"/>
 <xacro:thruster_dummy_link name="thr6" xyz="${thr6_x} 0.0 ${thr6_z}" rpy="1.57079632679 -0.0 0.0"/>
 
-  </xacro:macro>
 </robot>
 
 

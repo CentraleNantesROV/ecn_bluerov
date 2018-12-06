@@ -2,7 +2,7 @@
 
 import rospy
 from sensor_msgs.msg import FluidPressure, Temperature
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseWithCovarianceStamped
 import rospkg
 import sys
 
@@ -29,11 +29,12 @@ rospy.init_node('barometer_interface')
 
 temp_msg = Temperature()
 pres_msg = FluidPressure()
-pose_msg = PoseStamped()
+pose_msg = PoseWithCovarianceStamped()
+pose_msg.pose.covariance[14] = 0.2
 
 temp_pub = rospy.Publisher('temperature', Temperature, queue_size=1)
 pres_pub = rospy.Publisher('pressure', FluidPressure, queue_size=1)
-pose_pub = rospy.Publisher('depth', PoseStamped, queue_size=1)
+pose_pub = rospy.Publisher('depth', PoseWithCovarianceStamped, queue_size=1)
 
 # init density, used for depth
 sensor.setFluidDensity(1000)
@@ -45,7 +46,7 @@ while not rospy.is_shutdown():
 
         temp_msg.temperature = sensor.temperature() # centigrades
         pres_msg.fluid_pressure = sensor.pressure()       # mbar
-        pose_msg.pose.position.z = sensor.depth()   # meters
+        pose_msg.pose.pose.position.z = sensor.depth()   # meters
 
         temp_pub.publish(temp_msg)
         pres_pub.publish(pres_msg)

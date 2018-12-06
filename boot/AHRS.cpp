@@ -37,7 +37,15 @@ AHRS::AHRS(std::string sensor_name, ros::NodeHandle &nh)
   if (!sensor->probe())
     throw(std::runtime_error("Sensor not enabled"));
 
+  // init message
   msg.header.frame_id = sensor_name;
+  for(const uint idx: {0, 4, 8})
+  {
+    // covariance from MPU specs
+    msg.linear_acceleration_covariance[idx] = 0.008*static_cast<double>(G_SI);
+    msg.angular_velocity_covariance[idx] = .1*M_PI/180.;
+    msg.orientation_covariance[idx] = .5*M_PI/180;
+  }
   pub_imu = nh.advertise<sensor_msgs::Imu>(sensor_name, 1);
 }
 
@@ -391,7 +399,7 @@ int main(int argc, char *argv[])
   // declare node and loop rate at 100 Hz
   ros::init(argc, argv, "imu_node");
   ros::NodeHandle nh;
-  ros::Rate loop(100);
+  ros::Rate loop(300);
 
   // setup AHRS
   auto ahrs = std::unique_ptr <AHRS>{new AHRS(imuName(), nh)};

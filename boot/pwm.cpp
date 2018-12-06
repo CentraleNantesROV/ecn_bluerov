@@ -118,7 +118,6 @@ int main(int argc, char *argv[])
   for(auto idx: pwm_idx)
   {
     pwm->set_duty_cycle(idx, 1500);
-    std::cout << "PWM # " << idx << " armed\n";
     sleep(1);
   }
 
