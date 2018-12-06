@@ -32,7 +32,6 @@ public:
     thruster_sub = nh.subscribe(thruster_topic, 10, &Listener::readThrusters, this);
     tilt_sub = nh.subscribe(tilt_topic, 10, &Listener::readTilt, this);
     thruster_force.resize(6, 0);
-    tilt_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1);
   }
 
   float thrust(uint i) const
@@ -61,7 +60,6 @@ private:
   double thruster_time = 0;
   double tilt_time = 0;
   ros::Subscriber thruster_sub, tilt_sub;
-  ros::Publisher tilt_pub ;
 
   void readThrusters(const sensor_msgs::JointStateConstPtr &msg)
   {
@@ -86,7 +84,6 @@ private:
     {
       tilt_time = ros::Time::now().toSec();
       tilt_angle = std::min(0.785, std::max(-0.785, msg->position[0]));
-      tilt_pub.publish(*msg);
     }
   }
 };
@@ -128,6 +125,10 @@ int main(int argc, char *argv[])
   ros::NodeHandle nh;
   ros::Rate loop(50);
   Listener listener(nh, "thruster_command", "joint_setpoint");
+  ros::Publisher tilt_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1);
+  sensor_msgs::JointState tilt_msg;
+  tilt_msg.name = {"tilt"};
+  tilt_msg.position = {0};
 
   // maps
   const std::vector<float> forces = {-40, -35.5, -28.5, -22.2, -16.1, -10, -5.1, -1.1, 0, 0, 1.8, 6.2, 12.2, 19.2, 26.4, 33.8, 41.1, 49.9};
@@ -148,6 +149,10 @@ int main(int argc, char *argv[])
     // tilt pwm
     pwm->set_duty_cycle(pwm_idx[6], 1500 + 509.3*listener.tilt());
     //std::cout << "Tilt, angle = " << tilt_angle << ", pwm = " << 1100 + 509.3*(tilt_angle + 0.785) << std::endl;
+
+    tilt_msg.position[0] = listener.tilt();
+    tilt_msg.header.stamp = ros::Time::now();
+    tilt_pub.publish(tilt_msg);
 
     ros::spinOnce();
     loop.sleep();
