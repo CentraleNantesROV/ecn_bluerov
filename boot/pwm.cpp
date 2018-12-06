@@ -32,6 +32,7 @@ public:
     thruster_sub = nh.subscribe(thruster_topic, 10, &Listener::readThrusters, this);
     tilt_sub = nh.subscribe(tilt_topic, 10, &Listener::readTilt, this);
     thruster_force.resize(6, 0);
+    tilt_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1);
   }
 
   float thrust(uint i) const
@@ -60,6 +61,7 @@ private:
   double thruster_time = 0;
   double tilt_time = 0;
   ros::Subscriber thruster_sub, tilt_sub;
+  ros::Publisher tilt_pub ;
 
   void readThrusters(const sensor_msgs::JointStateConstPtr &msg)
   {
@@ -84,6 +86,7 @@ private:
     {
       tilt_time = ros::Time::now().toSec();
       tilt_angle = std::min(0.785, std::max(-0.785, msg->position[0]));
+      tilt_pub.publish(*msg);
     }
   }
 };
