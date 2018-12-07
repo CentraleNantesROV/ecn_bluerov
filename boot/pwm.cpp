@@ -7,6 +7,7 @@
 #include <ros/ros.h>
 #include <ros/subscriber.h>
 #include <sensor_msgs/JointState.h>
+#include <std_msgs/Bool.h>
 
 float interp(float v, const std::vector<float> &x, const std::vector<float> &y)
 {
@@ -31,6 +32,7 @@ public:
   {
     thruster_sub = nh.subscribe(thruster_topic, 10, &Listener::readThrusters, this);
     tilt_sub = nh.subscribe(tilt_topic, 10, &Listener::readTilt, this);
+    run_sub = nh.subscribe("run", 10, &Listener::readRun, this);
     thruster_force.resize(6, 0);
   }
 
@@ -54,12 +56,15 @@ public:
       tilt_angle = 0;
   }
 
+  bool running = true;
+
 private:
   std::vector<double> thruster_force;
   double tilt_angle = 0;
   double thruster_time = 0;
   double tilt_time = 0;
-  ros::Subscriber thruster_sub, tilt_sub;
+  ros::Subscriber thruster_sub, tilt_sub, run_sub;
+
 
   void readThrusters(const sensor_msgs::JointStateConstPtr &msg)
   {
@@ -76,6 +81,11 @@ private:
         }
       }
     }
+  }
+
+  void readRun(const std_msgs::BoolConstPtr &msg)
+  {
+    running = msg->data;
   }
 
   void readTilt(const sensor_msgs::JointStateConstPtr &msg)
@@ -136,24 +146,26 @@ int main(int argc, char *argv[])
 
   while (ros::ok())
   {
-    const double t = ros::Time::now().toSec();
-    listener.checkSilent(t);
-
-    // apply thruster pwm
-    for(uint i = 0; i < 6; ++i)
+    if(listener.running)
     {
-      const float v = interp(listener.thrust(i), forces, forces_pwm);
-      //std::cout << "Thr# " << i << ", force = " << thruster_force[i] << ", pwm = " << v << std::endl;
-      pwm->set_duty_cycle(pwm_idx[i], v);
+      const double t = ros::Time::now().toSec();
+      listener.checkSilent(t);
+
+      // apply thruster pwm
+      for(uint i = 0; i < 6; ++i)
+      {
+        const float v = interp(listener.thrust(i), forces, forces_pwm);
+        //std::cout << "Thr# " << i << ", force = " << thruster_force[i] << ", pwm = " << v << std::endl;
+        pwm->set_duty_cycle(pwm_idx[i], v);
+      }
+      // tilt pwm
+      pwm->set_duty_cycle(pwm_idx[6], 1500 + 509.3*listener.tilt());
+      //std::cout << "Tilt, angle = " << tilt_angle << ", pwm = " << 1100 + 509.3*(tilt_angle + 0.785) << std::endl;
+
+      tilt_msg.position[0] = listener.tilt();
+      tilt_msg.header.stamp = ros::Time::now();
+      tilt_pub.publish(tilt_msg);
     }
-    // tilt pwm
-    pwm->set_duty_cycle(pwm_idx[6], 1500 + 509.3*listener.tilt());
-    //std::cout << "Tilt, angle = " << tilt_angle << ", pwm = " << 1100 + 509.3*(tilt_angle + 0.785) << std::endl;
-
-    tilt_msg.position[0] = listener.tilt();
-    tilt_msg.header.stamp = ros::Time::now();
-    tilt_pub.publish(tilt_msg);
-
     ros::spinOnce();
     loop.sleep();
   }

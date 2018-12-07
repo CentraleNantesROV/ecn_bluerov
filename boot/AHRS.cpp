@@ -15,6 +15,7 @@
 #include <Common/Util.h>
 #include "AHRS.hpp"
 #include <stdexcept>
+#include <std_msgs/Bool.h>
 
 const float G_SI = 9.80665f;
 const float DT = 1/1300.0f;
@@ -390,6 +391,12 @@ std::string imuName()
 
 //=============================================================================
 
+static bool running;
+void readRun(const std_msgs::BoolConstPtr &msg)
+{
+  running = msg->data;
+}
+
 int main(int argc, char *argv[])
 {
   if (check_apm()) {
@@ -399,16 +406,21 @@ int main(int argc, char *argv[])
   // declare node and loop rate at 100 Hz
   ros::init(argc, argv, "imu_node");
   ros::NodeHandle nh;
-  ros::Rate loop(300);
+  ros::Rate loop(100);
 
+  ros::Subscriber run_sub = nh.subscribe("run", 10, readRun);
   // setup AHRS
   auto ahrs = std::unique_ptr <AHRS>{new AHRS(imuName(), nh)};
   ahrs->setGyroOffset();
 
+  running = true;
   while(ros::ok())
   {
-    ahrs->computeOrientation();
-    ahrs->publish();
+    if(running)
+    {
+      ahrs->computeOrientation();
+      ahrs->publish();
+    }
     ros::spinOnce();
     loop.sleep();
   }
