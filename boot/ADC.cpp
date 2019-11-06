@@ -5,7 +5,7 @@
 #include <memory>
 #include <ros/ros.h>
 #include <std_msgs/Float32MultiArray.h>
-#include <ecn_bluerov/ADC.h>
+#include <blurr/ADC.h>
 #include <std_msgs/Bool.h>
 
 #define READ_FAILED -1
@@ -27,8 +27,8 @@ int main(int argc, char *argv[])
   ros::Rate loop(10);
   ros::Subscriber run_sub = nh.subscribe("run", 10, readRun);
 
-  ecn_bluerov::ADC msg;
-  ros::Publisher pub_tension=nh.advertise<ecn_bluerov::ADC>("tensions",1);
+  blurr::ADC msg;
+  ros::Publisher pub_tension=nh.advertise<blurr::ADC>("tensions",1);
   auto adc = std::unique_ptr <ADC>{ new ADC_Navio2() };
   adc->initialize();
 

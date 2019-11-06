@@ -2,7 +2,7 @@
 
 <!-- STL-version of the URDF, used with gazebo for dynamic simulation  -->
 
-<robot name="pirov" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="blurr" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
 <xacro:arg name="use_mesh" default="true"/>
 <xacro:arg name="density" default="1"/>    
@@ -35,7 +35,7 @@
     <visualize>true</visualize>
     <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>lsm</topicName>
-        <bodyName>pirov</bodyName>
+        <bodyName>base_link</bodyName>
         <updateRateHZ>100.0</updateRateHZ>
         <gaussianNoise>0.01</gaussianNoise>
         <xyzOffset>0 0 0</xyzOffset>
@@ -52,7 +52,7 @@
     <visualize>true</visualize>
     <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_plugin">
         <topicName>mpu</topicName>
-        <bodyName>pirov</bodyName>
+        <bodyName>base_link</bodyName>
         <updateRateHZ>100.0</updateRateHZ>
         <gaussianNoise>0.01</gaussianNoise>
         <xyzOffset>0 0 0</xyzOffset>
@@ -64,6 +64,5 @@
 
 
 </robot>
-
 
 

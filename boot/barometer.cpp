@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
 
     // declare node and loop rate at 10 Hz
     ros::init(argc, argv, "barometer_node");
-    ROS_INFO("ros connected to pirov_barometer");
+    ROS_INFO("ros connected to blurr_barometer");
     ros::NodeHandle nh_("~");
     ros::Rate loop(10);
 
@@ -66,4 +66,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-

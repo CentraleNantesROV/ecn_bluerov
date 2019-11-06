@@ -8,7 +8,7 @@ import sys
 
 # get ms5837 path
 rospack = rospkg.RosPack()
-sys.path.append(rospack.get_path('ecn_bluerov') + '/ms5837-python/')
+sys.path.append(rospack.get_path('blurr') + '/ms5837-python/')
 import ms5837
 
 sensor = ms5837.MS5837_30BA() # Default I2C bus is 1 (Raspberry Pi 3)
@@ -55,5 +55,4 @@ while not rospy.is_shutdown():
         rospy.sleep(0.1)
     else:
         rospy.logwarn("Sensor read failed!")
-
 

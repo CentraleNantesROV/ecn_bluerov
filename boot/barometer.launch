@@ -1,8 +1,7 @@
 <launch>
-<group ns="pirov">
+<group ns="blurr">
 
-    <node pkg="ecn_bluerov" type="pirov_barometer" name="barometer_node" respwn="true" output="screen">
+    <node pkg="blurr" type="blurr_barometer" name="barometer_node" respwn="true" output="screen">
     </node>
 </group>
 </launch>
-
