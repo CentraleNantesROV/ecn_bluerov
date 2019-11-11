@@ -3,12 +3,12 @@
 import rospy
 from sensor_msgs.msg import FluidPressure, Temperature
 from geometry_msgs.msg import PoseWithCovarianceStamped
-import rospkg
-import sys
+from sys import path as syspath
+from sys import exit
+from os.path import abspath, dirname
 
 # get ms5837 path
-rospack = rospkg.RosPack()
-sys.path.append(rospack.get_path('blurr') + '/ms5837-python/')
+syspath.append(abspath(abspath(dirname(__file__)) + '/../ms5837-python/'))
 import ms5837
 
 sensor = ms5837.MS5837_30BA() # Default I2C bus is 1 (Raspberry Pi 3)
