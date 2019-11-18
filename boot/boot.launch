@@ -8,20 +8,20 @@
         <node name="pwm_interface" pkg="blurr" type="blurr_pwm" respawn="true"/>
     
     <!-- camera interface -->
-    <node type="raspicam_node" pkg="raspicam_node" name="raspicam" respawn="true">
-        <param name="camera_info_url" value="file://$(find blurr)/launch/cam_air.yaml"/>
+    <!--node type="raspicam_node" pkg="raspicam_node" name="raspicam" respawn="true">
+        <param name="camera_info_url" value="file://$(find blurr)/config/cam_air.yaml"/>
         <param name="width" value="640"/>
         <param name="height" value="480"/>
         <param name="framerate" value="20"/>
         <param name="camera_frame_id" value="raspicam"/>
-    </node>
+    </node-->
 
     <node pkg="blurr" type="blurr_imu" name="mpu_imu" respawn="true" output="screen">
         <param name="sensor_name" value="mpu" />
     </node>
 
     <node pkg="blurr" type="blurr_imu" name="lsm_imu" respawn="true" output="screen">
-                <param name="sensor_name" value="lsm" />
+        <param name="sensor_name" value="lsm" />
     </node>
 
     <node type="blurr_adc" pkg="blurr" name="adc_interface" respawn="true" output="screen"/>

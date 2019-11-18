@@ -8,6 +8,7 @@
 #include <ros/subscriber.h>
 #include <sensor_msgs/JointState.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Float32.h>
 
 float interp(float v, const std::vector<float> &x, const std::vector<float> &y)
 {
@@ -28,12 +29,13 @@ float interp(float v, const std::vector<float> &x, const std::vector<float> &y)
 class Listener
 {
 public:
-  Listener(ros::NodeHandle &nh, std::string thruster_topic, std::string tilt_topic)
+  Listener(ros::NodeHandle &nh, std::string thruster_topic, std::string tilt_topic, std::string light_topic)
   {
     thruster_sub = nh.subscribe(thruster_topic, 10, &Listener::readThrusters, this);
     tilt_sub = nh.subscribe(tilt_topic, 10, &Listener::readTilt, this);
     run_sub = nh.subscribe("run", 10, &Listener::readRun, this);
     thruster_force.resize(6, 0);
+    light_sub = nh.subscribe(light_topic, 10, &Listener::readLight, this);
   }
 
   float thrust(uint i) const
@@ -43,6 +45,10 @@ public:
   double tilt() const
   {
     return tilt_angle;
+  }
+  float light() const
+  {
+   return light_intensity;
   }
 
   void checkSilent(double t)
@@ -63,7 +69,8 @@ private:
   double tilt_angle = 0;
   double thruster_time = 0;
   double tilt_time = 0;
-  ros::Subscriber thruster_sub, tilt_sub, run_sub;
+  float light_intensity = 0.0;
+  ros::Subscriber thruster_sub, tilt_sub, run_sub, light_sub;
 
 
   void readThrusters(const sensor_msgs::JointStateConstPtr &msg)
@@ -96,6 +103,11 @@ private:
       tilt_angle = std::min(0.785, std::max(-0.785, msg->position[0]));
     }
   }
+
+  void readLight(const std_msgs::Float32ConstPtr &msg)
+  {
+      light_intensity = msg->data;
+  }
 };
 
 
@@ -110,7 +122,7 @@ int main(int argc, char *argv[])
   }
 
   // the PWM we control
-  const std::vector<int> pwm_idx = {0, 2, 4, 6, 8, 10, 12};
+  const std::vector<int> pwm_idx = {0, 2, 4, 6, 8, 10, 12, 13};
   // wait for PWM
   auto pwm = std::unique_ptr <RCOutput_Navio2>{new RCOutput_Navio2()};
 
@@ -134,7 +146,7 @@ int main(int argc, char *argv[])
   ros::init(argc, argv, "pwm_node");
   ros::NodeHandle nh;
   ros::Rate loop(50);
-  Listener listener(nh, "thruster_command", "joint_setpoint");
+  Listener listener(nh, "thruster_command", "joint_setpoint", "light");
   ros::Publisher tilt_pub = nh.advertise<sensor_msgs::JointState>("joint_states", 1);
   sensor_msgs::JointState tilt_msg;
   tilt_msg.name = {"tilt"};
@@ -165,6 +177,10 @@ int main(int argc, char *argv[])
       tilt_msg.position[0] = listener.tilt();
       tilt_msg.header.stamp = ros::Time::now();
       tilt_pub.publish(tilt_msg);
+      
+      // lumen light pwm
+      pwm->set_duty_cycle(pwm_idx[7], 1100 + 800*listener.light());
+      
     }
     ros::spinOnce();
     loop.sleep();
